@@ -8,13 +8,14 @@ namespace DotTrend
     /// </summary>
     public class SqlServerAdapter : IDatabaseAdapter
     {
+        /// <inheritdoc/>
         public Expression<Func<T, string>> FormatDate<T>(Expression<Func<T, DateTime>> dateProperty, string interval)
         {
             var paramExpr = dateProperty.Parameters[0];
             var dateExpr = dateProperty.Body;
-            
+
             Expression<Func<T, string>> result;
-            
+
             switch (interval)
             {
                 case "minute":
@@ -101,7 +102,7 @@ namespace DotTrend
                         Expression.Constant("isowk"),
                         dateExpr
                     );
-                    
+
                     result = Expression.Lambda<Func<T, string>>(
                         Expression.Call(
                             typeof(string),
@@ -123,7 +124,7 @@ namespace DotTrend
                 default:
                     throw new NotSupportedException($"Interval '{interval}' is not supported.");
             }
-            
+
             return result;
         }
     }

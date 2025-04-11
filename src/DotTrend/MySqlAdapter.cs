@@ -8,11 +8,12 @@ namespace DotTrend
     /// </summary>
     public class MySqlAdapter : IDatabaseAdapter
     {
+        /// <inheritdoc/>
         public Expression<Func<T, string>> FormatDate<T>(Expression<Func<T, DateTime>> dateProperty, string interval)
         {
             var paramExpr = dateProperty.Parameters[0];
             var dateExpr = dateProperty.Body;
-            
+
             // Determine method and format based on interval
             string format = interval switch
             {
@@ -24,17 +25,17 @@ namespace DotTrend
                 "week" => "%Y-%u", // MySQL week format
                 _ => throw new NotSupportedException($"Interval '{interval}' is not supported.")
             };
-            
+
             // Create expression for DATE_FORMAT(date, format)
             var formatMethod = typeof(MySqlDbFunctionsExtensions).GetMethod("DateFormat",
-                new[] { typeof(DbFunctions), typeof(DateTime), typeof(string) }) ?? throw new InvalidOperationException("MySQL DateFormat function not found");
+                [typeof(DbFunctions), typeof(DateTime), typeof(string)]) ?? throw new InvalidOperationException("MySQL DateFormat function not found");
             var formatCall = Expression.Call(
                 formatMethod,
                 Expression.Constant(EF.Functions),
                 dateExpr,
                 Expression.Constant(format)
             );
-            
+
             return Expression.Lambda<Func<T, string>>(formatCall, paramExpr);
         }
     }

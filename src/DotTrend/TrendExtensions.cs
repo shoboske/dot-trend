@@ -40,7 +40,7 @@ namespace DotTrend
         public static IDatabaseAdapter GetTrendAdapter(this DbContext context)
         {
             var providerName = context.Database.ProviderName?.ToLowerInvariant() ?? "";
-            
+
             return providerName switch
             {
                 var n when n.Contains("sqlserver") => new SqlServerAdapter(),

@@ -42,10 +42,10 @@ namespace DotTrend
                 if (context != null)
                 {
                     var dbSetProperty = context.GetType().GetProperties()
-                        .FirstOrDefault(p => p.PropertyType.IsGenericType 
-                                          && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) 
+                        .FirstOrDefault(p => p.PropertyType.IsGenericType
+                                          && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
                                           && p.PropertyType.GetGenericArguments()[0] == typeof(TEntity));
-                    
+
                     if (dbSetProperty != null)
                     {
                         return dbSetProperty.GetValue(context) as IQueryable<TEntity>;
@@ -57,10 +57,10 @@ namespace DotTrend
             if (_globalDbContext != null)
             {
                 var dbSetProperty = _globalDbContext.GetType().GetProperties()
-                    .FirstOrDefault(p => p.PropertyType.IsGenericType 
-                                      && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) 
+                    .FirstOrDefault(p => p.PropertyType.IsGenericType
+                                      && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
                                       && p.PropertyType.GetGenericArguments()[0] == typeof(TEntity));
-                
+
                 if (dbSetProperty != null)
                 {
                     return dbSetProperty.GetValue(_globalDbContext) as IQueryable<TEntity>;

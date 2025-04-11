@@ -8,11 +8,12 @@ namespace DotTrend
     /// </summary>
     public class SqliteAdapter : IDatabaseAdapter
     {
+        /// <inheritdoc/>
         public Expression<Func<T, string>> FormatDate<T>(Expression<Func<T, DateTime>> dateProperty, string interval)
         {
             var paramExpr = dateProperty.Parameters[0];
             var dateExpr = dateProperty.Body;
-            
+
             // Determine method and format based on interval
             string format = interval switch
             {
@@ -24,7 +25,7 @@ namespace DotTrend
                 "week" => "%Y-%W", // SQLite week format
                 _ => throw new NotSupportedException($"Interval '{interval}' is not supported.")
             };
-            
+
             // Create expression for strftime(format, date)
             var formatMethod = typeof(SqliteDbFunctionsExtensions).GetMethod("Strftime",
                 new[] { typeof(DbFunctions), typeof(string), typeof(DateTime) }) ?? throw new InvalidOperationException("SQLite Strftime function not found");
@@ -34,7 +35,7 @@ namespace DotTrend
                 Expression.Constant(format),
                 dateExpr
             );
-            
+
             return Expression.Lambda<Func<T, string>>(formatCall, paramExpr);
         }
     }

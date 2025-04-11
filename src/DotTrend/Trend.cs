@@ -51,14 +51,16 @@ namespace DotTrend
         {
             return Query(dbSet, databaseAdapter);
         }
-        
+
         /// <summary>
         /// Creates a new trend instance using the default DbContext.
         /// Note: This requires a DbContext to be available through dependency injection or a static property.
         /// </summary>
+        /// <param name="start">The start date</param>
+        /// <param name="end">The end date</param>
         /// <param name="databaseAdapter">Optional database adapter (defaults to SQL Server)</param>
         /// <returns>A new Trend instance</returns>
-        /// <exception cref="InvalidOperationException">Thrown when no DbContext with DbSet<TModel> can be found</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no DbContext with DbSet{TModel} can be found </exception>
         public static Trend<TModel> Between(DateTime start, DateTime end, IDatabaseAdapter? databaseAdapter = null)
         {
             // Get the current DbContext from somewhere
@@ -69,7 +71,7 @@ namespace DotTrend
                     $"No DbSet of type {typeof(TModel).Name} could be found. " +
                     "Please use Trend<T>.Query() or set up a TrendDbContextProvider.");
             }
-            
+
             return Query(dbSet, databaseAdapter).Between(start, end);
         }
 
@@ -86,23 +88,40 @@ namespace DotTrend
         /// <summary>
         /// Sets the grouping interval
         /// </summary>
-        public Trend<TModel> Interval(string interval)
+        private Trend<TModel> Interval(string interval)
         {
             _interval = interval.ToLower();
             return this;
         }
 
         /// <summary>
-        /// Sets the grouping interval to a specific time unit
+        /// Sets the grouping interval to a minute.
         /// </summary>
-        /// <returns></returns>
         public Trend<TModel> PerMinute() => Interval("minute");
 
         /// <summary>
+        /// Sets the grouping interval to an hour.
+        /// </summary>
         public Trend<TModel> PerHour() => Interval("hour");
+
+        /// <summary>
+        /// Sets the grouping interval to a day.
+        /// </summary>
         public Trend<TModel> PerDay() => Interval("day");
+
+        /// <summary>
+        /// Sets the grouping interval to a week.
+        /// </summary>
         public Trend<TModel> PerWeek() => Interval("week");
+
+        /// <summary>
+        /// Sets the grouping interval to a month.
+        /// </summary>
         public Trend<TModel> PerMonth() => Interval("month");
+
+        /// <summary>
+        /// Sets the grouping interval to a year.
+        /// </summary>
         public Trend<TModel> PerYear() => Interval("year");
 
         /// <summary>
@@ -176,7 +195,7 @@ namespace DotTrend
 
             // Create a property access expression for the date column
             var dateProperty = Expression.Property(parameter, _dateColumn);
-            
+
             // Create a lambda expression for accessing the date property
             var datePropertyLambda = Expression.Lambda<Func<TModel, DateTime>>(dateProperty, parameter);
 
@@ -221,12 +240,12 @@ namespace DotTrend
             var minuteExpr = Expression.Property(dateProperty, "Minute");
 
             // Create a new expression to construct a TrendPeriod
-            var constructor = typeof(TrendPeriod).GetConstructor(new[] { 
-                typeof(int), typeof(int), typeof(int), typeof(int), typeof(int), typeof(string) 
+            var constructor = typeof(TrendPeriod).GetConstructor(new[] {
+                typeof(int), typeof(int), typeof(int), typeof(int), typeof(int), typeof(string)
             }) ?? throw new InvalidOperationException("Could not find TrendPeriod constructor");
             var intervalExpr = Expression.Constant(_interval);
 
-            var newExpr = Expression.New(constructor, 
+            var newExpr = Expression.New(constructor,
                 yearExpr, monthExpr, dayExpr, hourExpr, minuteExpr, intervalExpr);
 
             // Create and return the lambda expression
@@ -237,7 +256,7 @@ namespace DotTrend
         /// Applies the specified aggregation function to the grouped query
         /// </summary>
         private List<TrendValue> ApplyAggregation<TValue>(
-            IQueryable<IGrouping<TrendPeriod, TModel>> groupedQuery, 
+            IQueryable<IGrouping<TrendPeriod, TModel>> groupedQuery,
             Expression<Func<TModel, TValue>>? valueSelector,
             AggregateFunction function)
         {
@@ -255,7 +274,7 @@ namespace DotTrend
 
             if (valueSelector == null)
             {
-                throw new ArgumentNullException(nameof(valueSelector), 
+                throw new ArgumentNullException(nameof(valueSelector),
                     "Value selector cannot be null for Sum, Average, Min, or Max operations");
             }
 
@@ -265,7 +284,7 @@ namespace DotTrend
             {
                 propertyName = memberExpr.Member.Name;
             }
-            
+
             if (string.IsNullOrEmpty(propertyName))
             {
                 throw new InvalidOperationException(
@@ -334,7 +353,7 @@ namespace DotTrend
             // Convert existing results to a dictionary for easy lookup
             // Use a case-insensitive dictionary to avoid duplicate key issues
             var resultsByPeriod = new Dictionary<DateTime, TrendValue>();
-            
+
             // Add each result to the dictionary, ensuring no duplicates
             foreach (var result in results)
             {

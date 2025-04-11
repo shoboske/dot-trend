@@ -8,11 +8,12 @@ namespace DotTrend
     /// </summary>
     public class PostgresAdapter : IDatabaseAdapter
     {
+        /// <inheritdoc/>
         public Expression<Func<T, string>> FormatDate<T>(Expression<Func<T, DateTime>> dateProperty, string interval)
         {
             var paramExpr = dateProperty.Parameters[0];
             var dateExpr = dateProperty.Body;
-            
+
             // Determine method and format based on interval
             string format = interval switch
             {
@@ -24,7 +25,7 @@ namespace DotTrend
                 "week" => "YYYY-IW", // PostgreSQL ISO week format
                 _ => throw new NotSupportedException($"Interval '{interval}' is not supported.")
             };
-            
+
             // Create expression for TO_CHAR(date, format)
             var formatMethod = typeof(NpgsqlDbFunctionsExtensions).GetMethod("ToChar",
                 new[] { typeof(DbFunctions), typeof(DateTime), typeof(string) }) ?? throw new InvalidOperationException("PostgreSQL ToChar function not found");
@@ -34,7 +35,7 @@ namespace DotTrend
                 dateExpr,
                 Expression.Constant(format)
             );
-            
+
             return Expression.Lambda<Func<T, string>>(formatCall, paramExpr);
         }
     }

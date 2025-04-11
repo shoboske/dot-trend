@@ -87,7 +87,7 @@ namespace DotTrend
                 "minute" => Year == other.Year && Month == other.Month && Day == other.Day && Hour == other.Hour && Minute == other.Minute,
                 "hour" => Year == other.Year && Month == other.Month && Day == other.Day && Hour == other.Hour,
                 "day" => Year == other.Year && Month == other.Month && Day == other.Day,
-                "week" => Year == other.Year && ToDateTime().AddDays(-((int)ToDateTime().DayOfWeek)).Date == 
+                "week" => Year == other.Year && ToDateTime().AddDays(-((int)ToDateTime().DayOfWeek)).Date ==
                           other.ToDateTime().AddDays(-((int)other.ToDateTime().DayOfWeek)).Date,
                 "month" => Year == other.Year && Month == other.Month,
                 "year" => Year == other.Year,
