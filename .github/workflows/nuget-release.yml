@@ -1,0 +1,62 @@
+name: NuGet Package Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version override (leave empty to use tag)'
+        required: false
+        type: string
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Set version from tag or input
+      id: version
+      run: |
+        if [ -n "${{ github.event.inputs.version }}" ]; then
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        elif [ -n "${{ github.event.release.tag_name }}" ]; then
+          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+        else
+          echo "No version specified. Using default from csproj."
+        fi
+    
+    - name: Update version if specified
+      if: env.VERSION != ''
+      run: |
+        if [ -n "${{ env.VERSION }}" ]; then
+          VERSION="${{ env.VERSION }}"
+          # Remove 'v' prefix if present
+          if [[ $VERSION == v* ]]; then
+            VERSION="${VERSION:1}"
+          fi
+          echo "Updating version to $VERSION"
+          sed -i "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/g" src/DotTrend/DotTrend.csproj
+        fi
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --configuration Release
+    
+    - name: Pack
+      run: dotnet pack src/DotTrend/DotTrend.csproj --no-build --configuration Release --output .
+    
+    - name: Publish to NuGet
+      run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -1,0 +1,40 @@
+name: Package Version Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/DotTrend/DotTrend.csproj'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Check for version change
+      id: version-check
+      run: |
+        # Get the version from the PR branch
+        PR_VERSION=$(grep -oP '<Version>\K[^<]+' src/DotTrend/DotTrend.csproj)
+        echo "PR version: $PR_VERSION"
+        
+        # Get the version from the main branch
+        git checkout origin/main
+        MAIN_VERSION=$(grep -oP '<Version>\K[^<]+' src/DotTrend/DotTrend.csproj)
+        echo "Main version: $MAIN_VERSION"
+        
+        if [ "$PR_VERSION" = "$MAIN_VERSION" ]; then
+          echo "::error::Version not updated. Please update the package version in DotTrend.csproj"
+          exit 1
+        else
+          echo "Version has been updated from $MAIN_VERSION to $PR_VERSION"
+        fi

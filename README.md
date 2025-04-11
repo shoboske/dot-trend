@@ -2,8 +2,11 @@
 
 [![NuGet](https://img.shields.io/nuget/v/DotTrend.svg)](https://www.nuget.org/packages/DotTrend/)
 [![License](https://img.shields.io/github/license/shoboske/dot-trend)](https://github.com/shoboske/dot-trend/blob/main/LICENSE)
+[![.NET CI](https://github.com/shoboske/dot-trend/actions/workflows/dotnet-ci.yml/badge.svg)](https://github.com/yourusername/dot-trend/actions/workflows/dotnet-ci.yml)
 
 A .NET library for generating time-series trend data from Entity Framework Core queries with support for different database providers. DotTrend makes it easy to create trend reports by date intervals (minute, hour, day, week, month, year) with zero-filling for missing periods.
+
+> **Inspiration**: DotTrend is heavily inspired by the [Laravel Trend](https://github.com/Flowframe/laravel-trend) package, bringing similar time-series trend generation capabilities to the .NET ecosystem.
 
 ## Features
 
