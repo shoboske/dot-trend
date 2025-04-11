@@ -4,10 +4,30 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <!-- NuGet Package Metadata -->
+    <PackageId>DotTrend</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Your Name</Authors>
+    <Company>Your Company</Company>
+    <Description>A .NET library for generating time-series trend data from Entity Framework Core queries with support for different database providers.</Description>
+    <PackageTags>entityframeworkcore;trends;analytics;timeseries;reporting</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/yourusername/dotnet-trend</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/dotnet-trend</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
 </Project>
