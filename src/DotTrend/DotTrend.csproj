@@ -14,8 +14,8 @@
     <PackageTags>entityframeworkcore;trends;analytics;timeseries;reporting</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/yourusername/dotnet-trend</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/yourusername/dotnet-trend</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/shoboske/dot-trend</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/shoboske/dot-trend</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
